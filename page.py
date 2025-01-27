@@ -36,7 +36,7 @@ def connect(device: str):
         if count >= 10 :
             raise ConnectionError('Connection to {} timed out after {} seconds'.
                                   format(device, count))
-        time.sleep(0.1)
+        time.sleep(1)
         count += 1
 
     yield req

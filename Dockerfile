@@ -3,18 +3,19 @@ COPY requirements.txt /
 RUN apt-get update
 Run apt-get upgrade -y
 RUN apt-get install -y pkg-config \
-  libboost-python-dev \
-  libboost-thread-dev \
-  libbluetooth-dev \
-  libglib2.0-dev \
-  python3-dev \
-  python3-pip
+  python-pexpect\
+  libusb-dev \
+  libdbus-1-dev\
+  libglib2.0-dev\
+  libudev-dev \
+  libical-dev \
+  libreadline-dev
 
 RUN pip install --upgrade pip
 RUN pip install --root-user-action=ignore -r requirements.txt
 RUN pip install --root-user-action=ignore gunicorn
-RUN pip install --root-user-action=ignore pybluez
-RUN pip install --root-user-action=ignore gattlib
+RUN pip install --root-user-action=ignore bluepy
+RUN pip install --root-user-action=ignore python3-bluez
 COPY . /
 RUN mkdir /buzzerlog
 CMD [ "python", "-u", "page.py" ]
