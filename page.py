@@ -4,7 +4,10 @@ import time
 from aiohttp import web
 from pathlib import Path
 from typing import Callable, Awaitable, Dict, Any
-from gattlib import GATTRequester
+from contextlib import contextmanager
+
+import bluetooth
+from bluetooth.ble import GATTRequester
 
 
 log_file = os.path.join('buzzerlog', 'buzzer.log')
@@ -22,6 +25,26 @@ router = web.RouteTableDef()
 _WebHandler = Callable[[web.Request], Awaitable[web.StreamResponse]]
 
 
+
+@contextmanager
+def connect(device: str):
+    req = GATTRequester(device, False, 'hci0')
+    req.connect(False, 'random')
+
+    count = 0
+    while not req.is_connected():
+        if count >= 10 :
+            raise ConnectionError('Connection to {} timed out after {} seconds'.
+                                  format(device, count))
+        time.sleep(0.1)
+        count += 1
+
+    yield req
+
+    if req.is_connected():
+        req.disconnect()
+
+
 @router.get('/')
 async def greet_user(request: web.Request) -> Dict[str, Any]:
     logger.info("Home Page")
@@ -30,20 +53,13 @@ async def greet_user(request: web.Request) -> Dict[str, Any]:
     logger.info("Opening door")
     for device in devices:
         logger.info(device)
-        req = GATTRequester(device, False)
-        logger.info("Pre-Connect")
-        req.connect(False, 'random')
-        n_remaining = 10
-        while n_remaining > 0:
-            logger.info("Pre-sleep")
-            time.sleep(1)
-            if req.is_connected():
-                req.write_by_handle(0x16, b'\x57\x01\x00')
-                logger.info("Message Sent")
-                req.disconnect()
-                break
-            n_remaining -= 1
-    logger.info('Command execution successful')
+
+        with connect(device=device) as req:
+            print('Connected!')
+            out = req.write_by_handle(0x16, b'\x57\x01\x00')
+            logger.info(f"Message Sent {out}")
+            logger.info('Command execution successful')
+    logger.info("END: Opening door")
     return {}
 
 
