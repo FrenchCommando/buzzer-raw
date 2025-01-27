@@ -9,12 +9,16 @@ RUN apt-get install -y pkg-config \
   libglib2.0-dev\
   libudev-dev \
   libical-dev \
-  libreadline-dev
-
+  libreadline-dev \
+  python3-pip \
+  libbluetooth-dev \
+  libboost-python-dev \
+  libboost-thread-dev
 RUN pip install --upgrade pip
 RUN pip install --root-user-action=ignore -r requirements.txt
 RUN pip install --root-user-action=ignore gunicorn
 RUN pip install --root-user-action=ignore bluepy
+RUN pip install --root-user-action=ignore gattlib
 RUN pip install --root-user-action=ignore pybluez
 COPY . /
 RUN mkdir /buzzerlog
