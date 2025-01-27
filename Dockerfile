@@ -14,4 +14,4 @@ RUN pip install --root-user-action=ignore gunicorn
 RUN pip install --root-user-action=ignore gattlib
 COPY . /
 RUN mkdir /buzzerlog
-CMD [ "python", "-u", "host_page.py" ]
+CMD [ "python", "-u", "page.py" ]
