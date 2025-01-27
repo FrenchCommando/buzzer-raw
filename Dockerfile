@@ -15,7 +15,7 @@ RUN pip install --upgrade pip
 RUN pip install --root-user-action=ignore -r requirements.txt
 RUN pip install --root-user-action=ignore gunicorn
 RUN pip install --root-user-action=ignore bluepy
-RUN pip install --root-user-action=ignore python3-bluez
+RUN pip install --root-user-action=ignore pybluez
 COPY . /
 RUN mkdir /buzzerlog
 CMD [ "python", "-u", "page.py" ]
